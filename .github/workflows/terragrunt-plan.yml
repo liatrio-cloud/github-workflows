@@ -6,11 +6,36 @@ on:
         default: false
         type: boolean
         description: "Determine if this is a Pull Request - If so, comment on PR with plan output"
+      workingDirectory:
+        required: false
+        type: string
+        description: "Location of Terragrunt files for execution"
       environment:
         required: false
-        default: "dev"
+        default: dev
         type: string
         description: "Enviroment to plan against"
+      branch:
+        required: false
+        default: main
+        type: string
+      secrets:
+        TF_VAR_ARM_CLIENT_ID: 
+          required: true
+          type: string
+            # ${{ secrets.ARM_CLIENT_ID }}
+        TF_VAR_ARM_CLIENT_SECRET: 
+          required: true
+          type: string
+            # ${{ secrets.ARM_CLIENT_SECRET }}
+        TF_VAR_ARM_SUBSCRIPTION_ID: 
+          required: true
+          type: string
+            # ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        TF_VAR_ARM_TENANT_ID: 
+          required: true
+          type: string
+            # ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   fmt:
@@ -22,7 +47,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Terraform fmt check
-        run: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive -diff
   
   validate:
     name: "Terraform validate check"
@@ -37,8 +62,7 @@ jobs:
         run: terraform validate
         env:
           ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
-          ENVIRONMENT: prod
-          BRANCH: master
+          ENVIRONMENT: ${{ inputs.environment }}
           TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
@@ -64,7 +88,6 @@ jobs:
         env:
           ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          BRANCH: main
           TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
