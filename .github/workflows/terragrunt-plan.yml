@@ -34,7 +34,7 @@ on:
 
 jobs:
   validate:
-    name: "Terraform validate check"
+    name: "Terraform fmt & validate"
     runs-on:
       - self-hosted
       - terraform-1.0
