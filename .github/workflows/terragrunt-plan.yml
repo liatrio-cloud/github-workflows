@@ -20,23 +20,23 @@ on:
         required: false
         default: main
         type: string
-      secrets:
-        TF_VAR_ARM_CLIENT_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_CLIENT_ID }}
-        TF_VAR_ARM_CLIENT_SECRET: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_CLIENT_SECRET }}
-        TF_VAR_ARM_SUBSCRIPTION_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_SUBSCRIPTION_ID }}
-        TF_VAR_ARM_TENANT_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_TENANT_ID }}
+    secrets:
+      TF_VAR_ARM_CLIENT_ID:
+        required: true
+        type: string
+          # ${{ secrets.ARM_CLIENT_ID }}
+      TF_VAR_ARM_CLIENT_SECRET:
+        required: true
+        type: string
+          # ${{ secrets.ARM_CLIENT_SECRET }}
+      TF_VAR_ARM_SUBSCRIPTION_ID:
+        required: true
+        type: string
+          # ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      TF_VAR_ARM_TENANT_ID:
+        required: true
+        type: string
+          # ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   fmt:
