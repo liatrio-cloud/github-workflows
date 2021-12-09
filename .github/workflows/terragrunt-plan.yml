@@ -21,6 +21,8 @@ on:
         default: main
         type: string
     secrets:
+      ARM_ACCESS_KEY:
+        required: true
       ARM_CLIENT_ID:
         required: true
       ARM_CLIENT_SECRET:
