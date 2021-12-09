@@ -6,10 +6,11 @@ on:
         default: false
         type: boolean
         description: "Determine if this is a Pull Request - If so, comment on PR with plan output"
-      workingDirectory:
+      working-directory:
         required: false
         type: string
         description: "Location of Terragrunt files for execution"
+        default: ./
       environment:
         required: false
         default: dev
@@ -46,6 +47,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Terraform fmt check
         run: terraform fmt -check -recursive -diff
   
@@ -58,15 +60,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Terraform validate check
+
+      - name: Terraform validate
         run: terraform validate
         env:
           ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
   
   plan:
     name: Terraform Plan
@@ -88,10 +89,8 @@ jobs:
         env:
           ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
   
   pullRequestComment:
     runs-on: ubuntu-latest
