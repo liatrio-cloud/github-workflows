@@ -5,63 +5,50 @@ on:
         required: false
         type: string
         description: "Location of Terragrunt files for execution"
+        default: ./
       environment:
         required: false
         default: dev
         type: string
-        description: "Enviroment to plan against"
+        description: "Environment to plan against"
       branch:
         required: false
         default: main
         type: string
-      secrets:
-        TF_VAR_ARM_CLIENT_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_CLIENT_ID }}
-        TF_VAR_ARM_CLIENT_SECRET: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_CLIENT_SECRET }}
-        TF_VAR_ARM_SUBSCRIPTION_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_SUBSCRIPTION_ID }}
-        TF_VAR_ARM_TENANT_ID: 
-          required: true
-          type: string
-            # ${{ secrets.ARM_TENANT_ID }}
+    secrets:
+      ARM_ACCESS_KEY:
+        required: true
+      ARM_CLIENT_ID:
+        required: true
+      ARM_CLIENT_SECRET:
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
 
 jobs:
-  fmt:
-    name: "Terraform fmt check"
+  validate:
+    name: "Terraform fmt & validate"
     runs-on:
       - self-hosted
       - terraform-1.0
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Terraform fmt check
         run: terraform fmt -check -recursive -diff
-  
-  validate:
-    name: "Terraform validate check"
-    runs-on:
-      - self-hosted
-      - terraform-1.0
-    needs: fmt
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Terraform validate check
+
+      - name: Terraform validate
         run: terraform validate
         env:
-          ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
   
   plan:
     name: Terraform Plan
@@ -81,12 +68,12 @@ jobs:
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
-          ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
   
   pullRequestComment:
     runs-on: ubuntu-latest
