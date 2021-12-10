@@ -51,7 +51,7 @@ jobs:
 
       - name: Terragrunt plan
         run: |
-          terragrunt run-all plan --terragrunt-working-dir ${{ inputs.workingDirectory }} > logs.txt
+          terragrunt run-all plan --terragrunt-working-dir ${{ inputs.workingDirectory }} | tee logs.txt
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
