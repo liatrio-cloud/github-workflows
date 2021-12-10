@@ -1,11 +1,6 @@
 on:
   workflow_call:
     inputs:
-      isPullRequest:
-        required: false
-        default: false
-        type: boolean
-        description: "Determine if this is a Pull Request - If so, comment on PR with plan output"
       workingDirectory:
         required: false
         type: string
@@ -82,7 +77,7 @@ jobs:
 
       - name: Terragrunt plan
         run: |
-          terragrunt run-all plan > logs.txt
+          terragrunt run-all plan -chdr > logs.txt
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
@@ -99,7 +94,7 @@ jobs:
       - plan
     steps:
       - name: Pull Request Comment
-        if: ${{ inputs.isPullRequest == true }} && contains( ${{ needs.plan.outputs.modified_terraform }}, "No changes. Infrastructure is up-to-date.")
+        if: "github.event_name == 'pull_request' && contains( ${{ needs.plan.outputs.modified_terraform }}, 'No changes. Infrastructure is up-to-date.')"
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
