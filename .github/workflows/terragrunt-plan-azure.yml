@@ -16,8 +16,6 @@ on:
         default: main
         type: string
     secrets:
-      ARM_ACCESS_KEY:
-        required: true
       ARM_CLIENT_ID:
         required: true
       ARM_CLIENT_SECRET:
@@ -43,10 +41,9 @@ jobs:
       - name: Terraform validate
         run: terraform validate
         env:
-          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
   
@@ -68,10 +65,9 @@ jobs:
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
-          ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
           ENVIRONMENT: ${{ inputs.environment }}
-          TF_VAR_arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
   
