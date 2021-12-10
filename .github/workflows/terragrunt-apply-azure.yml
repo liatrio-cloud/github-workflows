@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      workingDirectory:
+        required: false
+        type: string
+        description: "Location of Terragrunt files for execution"
+        default: ./
+    secrets:
+      ARM_CLIENT_ID:
+        required: true
+      ARM_CLIENT_SECRET:
+        required: true
+      ARM_SUBSCRIPTION_ID:
+        required: true
+      ARM_TENANT_ID:
+        required: true
+
+jobs:
+  validate:
+    name: "Terraform fmt & validate"
+    runs-on:
+      - self-hosted
+      - terraform-1.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive -diff
+
+      - name: Terraform validate
+        run: terraform validate
+        env:
+          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+  
+  plan:
+    name: Terraform Apply
+    runs-on:
+      - self-hosted
+      - terraform-1.0
+    needs: validate
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Terragrunt apply
+        run: yes | terragrunt run-all apply --terragrunt-working-dir ${{ inputs.workingDirectory }} > logs.txt
+        env:
+          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
