@@ -6,15 +6,6 @@ on:
         type: string
         description: "Location of Terragrunt files for execution"
         default: ./
-      environment:
-        required: false
-        default: dev
-        type: string
-        description: "Environment to plan against"
-      branch:
-        required: false
-        default: main
-        type: string
     secrets:
       ARM_CLIENT_ID:
         required: true
@@ -41,7 +32,6 @@ jobs:
       - name: Terraform validate
         run: terraform validate
         env:
-          ENVIRONMENT: ${{ inputs.environment }}
           ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
@@ -65,7 +55,6 @@ jobs:
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
-          ENVIRONMENT: ${{ inputs.environment }}
           ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
