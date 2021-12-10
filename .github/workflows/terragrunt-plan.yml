@@ -81,7 +81,7 @@ jobs:
       - plan
     steps:
       - name: Pull Request Comment
-        if: "github.event_name == 'pull_request' && contains( ${{ needs.plan.outputs.modified_terraform }}, 'No changes. Infrastructure is up-to-date.')"
+        if: github.event.pull_request.base.ref != '' && contains( ${{ needs.plan.outputs.modified_terraform }}, 'No changes. Infrastructure is up-to-date.')
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
