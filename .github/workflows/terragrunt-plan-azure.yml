@@ -69,7 +69,7 @@ jobs:
       - plan
     steps:
       - name: Pull Request Comment
-        if: contains( ${{ needs.plan.outputs.modified_terraform }}, 'No changes. Infrastructure is up-to-date.')
+        if: !contains( ${{ needs.plan.outputs.modified_terraform }}, 'No changes. Infrastructure is up-to-date.')
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
