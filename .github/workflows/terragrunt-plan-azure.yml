@@ -30,12 +30,12 @@ jobs:
         run: terraform fmt -check -recursive -diff
 
       - name: Terraform validate
-        run: terraform validate
+        run: terragrunt validate --terragrunt-working-dir ${{ inputs.workingDirectory }}
         env:
           ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
   plan:
     name: Terraform Plan
@@ -52,14 +52,14 @@ jobs:
       - name: Terragrunt plan
         run: |
           set -o pipefail
-          terragrunt run-all plan --terragrunt-working-dir ${{ inputs.workingDirectory }} | tee logs.txt
+          terragrunt plan --terragrunt-working-dir ${{ inputs.workingDirectory }} | tee logs.txt
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
           ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          TF_VAR_arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          TF_VAR_arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
   pullRequestComment:
     name: Comment on PR
