@@ -23,7 +23,6 @@ on:
 
 jobs:
   validate:
-    environment: ${{ inputs.environment }}
     name: "Terraform fmt & validate"
     runs-on:
       - self-hosted
@@ -44,7 +43,6 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
   plan:
-    environment: ${{ inputs.environment }}
     name: Terraform Plan
     runs-on:
       - self-hosted
