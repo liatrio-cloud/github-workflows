@@ -4,8 +4,13 @@ on:
       workingDirectory:
         required: false
         type: string
-        description: "Location of Terragrunt files for execution"
+        description: "Location of Terragrunt config"
         default: ./
+      environment:
+        required: false
+        type: string
+        description: "GitHub environment to deploy to"
+        default: dev
     secrets:
       ARM_CLIENT_ID:
         required: true
@@ -18,6 +23,7 @@ on:
 
 jobs:
   validate:
+    environment: ${{ inputs.environment }}
     name: "Terraform fmt & validate"
     runs-on:
       - self-hosted
@@ -32,12 +38,13 @@ jobs:
       - name: Terraform validate
         run: terragrunt validate --terragrunt-working-dir ${{ inputs.workingDirectory }}
         env:
-          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
   plan:
+    environment: ${{ inputs.environment }}
     name: Terraform Plan
     runs-on:
       - self-hosted
@@ -56,7 +63,7 @@ jobs:
           echo "##[set-output name=modified_terraform;]$(cat logs.txt | grep "No changes. Infrastructure is up-to-date." || true)"
         id: plan
         env:
-          ARM_CLIENT_ID : ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
